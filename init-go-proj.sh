@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set project name and directories
-PROJECT_NAME="ubuntu-to-fedora"
+PROJECT_NAME="omakub-fedora"
 CMD_DIR="cmd"
 TESTS_DIR="tests"
 

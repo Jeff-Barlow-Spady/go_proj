@@ -1,26 +1,25 @@
 package main
 
 import (
-    "fmt"
-    "os"
-
-    "github.com/charmbracelet/bubbletea"
-    "ubuntu-to-fedora/cmd" // Importing the TUI logic
+	"fmt"
 )
 
-// Entry point
 func main() {
-    if _, err := runTUI(); err != nil {
-        fmt.Printf("Error: %v\n", err)
-        os.Exit(1)
-    }
-}
+	repoDir := "./omakub"
 
-// runTUI runs the Bubble Tea TUI for the app
-func runTUI() (tea.Model, error) {
-    // Initialize the TUI
-    p := tea.NewProgram(cmd.InitialModel())
+	// Clone the repository
+	err := ubuntu_to_fedora.CloneOmakubRepo(repoDir)
+	if err != nil {
+		fmt.Printf("Error during repository cloning: %v\n", err)
+		return
+	}
 
-    // Start the TUI
-    return p.Start()
+	// Replace Ubuntu-specific commands
+	err = ubuntu_to_fedora.ReplaceUbuntuWithFedora(repoDir)
+	if err != nil {
+		fmt.Printf("Error during command replacement: %v\n", err)
+		return
+	}
+
+	fmt.Println("All operations completed successfully.")
 }
