@@ -2,8 +2,9 @@ package cmd
 
 import (
 	"fmt"
-    "github.com/jeff-barlow-spady/go_proj/ubuntuswap"
-	"github.com/charmbracelet/bubbletea"
+
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/jeff-barlow-spady/go_proj/ubuntuswap"
 )
 
 // Improved TUI model with graceful error handling
@@ -58,12 +59,12 @@ func (m model) View() string {
 
 func runConversion() error {
 	repoDir := "./omakub"
-	err := ubuntu_to_fedora.CloneOmakubRepo(repoDir)
+	err := ubuntuswap.CloneOmakubRepo(repoDir)
 	if err != nil {
 		return fmt.Errorf("error cloning repository: %v", err)
 	}
 
-	err = ubuntu_to_fedora.ReplaceUbuntuWithFedora(repoDir)
+	err = ubuntuswap.ReplaceUbuntuWithFedora(repoDir)
 	if err != nil {
 		return fmt.Errorf("error replacing Ubuntu-specific commands: %v", err)
 	}

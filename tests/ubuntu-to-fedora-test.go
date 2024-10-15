@@ -18,7 +18,7 @@ func TestCloneOmakubRepo(t *testing.T) {
     }
     defer os.RemoveAll(tempDir) // Clean up
 
-    err = ubuntu_to_fedora.CloneOmakubRepo(tempDir)
+    err = ubuntuswap.CloneOmakubRepo(tempDir)
     assert.NoError(t, err, "Expected no error during repo clone")
     // Check if the repo was cloned (by checking for a README.md or .git directory)
     assert.DirExists(t, filepath.Join(tempDir, ".git"), "Repository should be cloned")
@@ -34,7 +34,7 @@ func TestReplaceUbuntuWithFedora(t *testing.T) {
     defer os.RemoveAll(tempDir) // Clean up
 
     // Create a mock Ubuntu script
-    mockScript := Get:1 https://packages.microsoft.com/repos/microsoft-ubuntu-focal-prod focal InRelease [3632 B]
+mockScript := Get:1 https://packages.microsoft.com/repos/microsoft-ubuntu-focal-prod focal InRelease [3632 B]
 Get:2 https://dl.yarnpkg.com/debian stable InRelease [17.1 kB]
 Get:3 https://packages.microsoft.com/repos/microsoft-ubuntu-focal-prod focal/main amd64 Packages [317 kB]
 Get:4 https://repo.anaconda.com/pkgs/misc/debrepo/conda stable InRelease [3961 B]
@@ -80,7 +80,7 @@ Error: must run as root
     }
 
     // Run the replacement function
-    err = ubuntu_to_fedora.ReplaceUbuntuWithFedora(tempDir)
+    err = ubuntuswap.ReplaceUbuntuWithFedora(tempDir)
     assert.NoError(t, err, "Expected no error during replacement")
 
     // Read the modified script
