@@ -2,25 +2,20 @@ package main
 
 import (
 	"fmt"
-	"omakub-fedora/ubuntuswap"
+	"omakub-fedora/cmd"
+	"os"
+
+	tea "github.com/charmbracelet/bubbletea"
 )
 
 func main() {
-	repoDir := "./omakub"
+	// Initialize the TUI model
+	m := cmd.NewModel()
 
-	// Clone the repository
-	err := ubuntuswap.CloneOmakubRepo(repoDir)
-	if err != nil {
-		fmt.Printf("Error during repository cloning: %v\n", err)
-		return
+	// Start the TUI
+	p := tea.NewProgram(m)
+	if err := p.Start(); err != nil {
+		fmt.Printf("Error starting TUI: %v\n", err)
+		os.Exit(1)
 	}
-
-	// Replace Ubuntu-specific commands
-	err = ubuntuswap.ReplaceUbuntuWithFedora(repoDir)
-	if err != nil {
-		fmt.Printf("Error during command replacement: %v\n", err)
-		return
-	}
-
-	fmt.Println("All operations completed successfully.")
 }

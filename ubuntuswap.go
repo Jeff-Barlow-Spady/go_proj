@@ -14,7 +14,7 @@ import (
 
 // CloneOmakubRepo clones the repository to the specified directory with improved error handling.
 func CloneOmakubRepo(destDir string) error {
-	repoURL := "https://github.com/omakub/omakub.git" // Replace with actual repo URL
+	repoURL := "https://github.com/Jeff-Barlow-Spady/omakub-toast.git" // Replace with actual repo URL
 
 	// Check if the destination directory exists and is non-empty
 	if _, err := os.Stat(destDir); !os.IsNotExist(err) {
