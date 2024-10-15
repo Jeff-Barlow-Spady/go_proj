@@ -3,7 +3,7 @@ package cmd
 import (
     "fmt"
     "github.com/charmbracelet/bubbletea"
-    "../ubuntu_to_fedora"
+    "github.com/Jeff-Barlow-Spady/go_proj/ubuntu-to-fedora"
 )
 
 // Improved TUI model with graceful error handling
