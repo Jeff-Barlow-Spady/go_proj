@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"omakub-fedora/ubuntuswap"
 
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/jeff-barlow-spady/go_proj/ubuntuswap"
+	"github.com/charmbracelet/bubbletea"
 )
 
 // Improved TUI model with graceful error handling
@@ -13,6 +13,11 @@ type model struct {
 	selected map[int]struct{} // User-selected packages
 	err      error            // Capture any errors that occur
 	quitting bool             // Quit flag
+}
+
+// Init function to satisfy the tea.Model interface
+func (m model) Init() tea.Cmd {
+	return nil
 }
 
 // Update function with graceful error handling

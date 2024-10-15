@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-    "github.com/jeff-barlow-spady/go_proj/ubuntuswap"
+	"omakub-fedora/ubuntuswap"
 )
 
 func main() {
