@@ -1,73 +1,105 @@
 package cmd
 
 import (
-    "fmt"
-    "github.com/charmbracelet/bubbletea"
-    "github.com/Jeff-Barlow-Spady/go_proj/ubuntu-to-fedora"
+	"fmt"
+
+	"ubuntu-to-fedora/pkg/converter"
+
+	tea "github.com/charmbracelet/bubbletea"
 )
 
-// Improved TUI model with graceful error handling
-type model struct {
-    choices  []string   // Available packages/apps
-    selected map[int]struct{} // User-selected packages
-    err      error      // Capture any errors that occur
-    quitting bool       // Quit flag
+// Model represents the TUI state
+type Model struct {
+	choices  []string         // Available packages/apps
+	selected map[int]struct{} // User-selected packages
+	err      error            // Capture any errors that occur
+	quitting bool             // Quit flag
 }
 
-// Update function with graceful error handling
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-    switch msg := msg.(type) {
-    case tea.KeyMsg:
-        switch msg.String() {
-        case "ctrl+c", "q":
-            m.quitting = true
-            return m, tea.Quit
-        case "enter":
-            // Run the conversion, but handle errors gracefully
-            err := runConversion()
-            if err != nil {
-                m.err = err
-            }
-            return m, tea.Quit
-        }
-    }
-    return m, nil
+// InitialModel returns a new model with initial state
+func InitialModel() Model {
+	return Model{
+		choices: []string{
+			"Chrome",
+			"VSCode",
+			"Docker",
+			"Spotify",
+			"Signal",
+		},
+		selected: make(map[int]struct{}),
+	}
 }
 
-// View function that displays any errors
-func (m model) View() string {
-    if m.quitting {
-        return "Bye!\n"
-    }
+// Init implements tea.Model
+func (m Model) Init() tea.Cmd {
+	return nil
+}
 
-    if m.err != nil {
-        return fmt.Sprintf("Error: %v\n", m.err)
-    }
+// Update handles user input and updates the model
+func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch msg.String() {
+		case "ctrl+c", "q":
+			m.quitting = true
+			return m, tea.Quit
+		case "up", "k":
+			return m, nil
+		case "down", "j":
+			return m, nil
+		case " ":
+			// Toggle selection
+			return m, nil
+		case "enter":
+			// Run the conversion
+			err := runConversion()
+			if err != nil {
+				m.err = err
+			}
+			return m, tea.Quit
+		}
+	}
+	return m, nil
+}
 
-    s := "Which apps do you want to keep? Press Enter to confirm.\n\n"
-    for i, choice := range m.choices {
-        selected := "[ ] "
-        if _, ok := m.selected[i]; ok {
-            selected = "[x] "
-        }
-        s += fmt.Sprintf("%s%s\n", selected, choice)
-    }
+// View renders the current state of the model
+func (m Model) View() string {
+	if m.quitting {
+		return "Bye!\n"
+	}
 
-    return s
+	if m.err != nil {
+		return fmt.Sprintf("Error: %v\n", m.err)
+	}
+
+	s := "Which apps do you want to keep? Press Enter to confirm.\n\n"
+	for i, choice := range m.choices {
+		cursor := " "
+		if _, ok := m.selected[i]; ok {
+			cursor = "x"
+		}
+		s += fmt.Sprintf("[%s] %s\n", cursor, choice)
+	}
+
+	s += "\nPress space to select/unselect\n"
+	s += "Press enter to confirm\n"
+	s += "Press q to quit\n"
+
+	return s
 }
 
 func runConversion() error {
-    repoDir := "./omakub"
-    err := ubuntu_to_fedora.CloneOmakubRepo(repoDir)
-    if err != nil {
-        return fmt.Errorf("error cloning repository: %v", err)
-    }
+	repoDir := "./omakub"
+	err := converter.CloneOmakubRepo(repoDir)
+	if err != nil {
+		return fmt.Errorf("error cloning repository: %v", err)
+	}
 
-    err = ubuntu_to_fedora.ReplaceUbuntuWithFedora(repoDir)
-    if err != nil {
-        return fmt.Errorf("error replacing Ubuntu-specific commands: %v", err)
-    }
+	err = converter.ReplaceUbuntuWithFedora(repoDir)
+	if err != nil {
+		return fmt.Errorf("error replacing Ubuntu-specific commands: %v", err)
+	}
 
-    fmt.Println("Conversion completed successfully.")
-    return nil
+	fmt.Println("Conversion completed successfully.")
+	return nil
 }
