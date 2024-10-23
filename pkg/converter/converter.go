@@ -17,6 +17,7 @@ type AppScript struct {
 }
 
 func GetAvailableApps(dir string) ([]AppScript, error) {
+	seen := make(map[string]bool)
 	var apps []AppScript
 
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
@@ -34,10 +35,13 @@ func GetAvailableApps(dir string) ([]AppScript, error) {
 			name = strings.ReplaceAll(name, "-", " ")
 			name = strings.Title(strings.ToLower(name))
 
-			apps = append(apps, AppScript{
-				Name:     name,
-				FilePath: path,
-			})
+			if !seen[name] {
+				seen[name] = true
+				apps = append(apps, AppScript{
+					Name:     name,
+					FilePath: path,
+				})
+			}
 		}
 
 		return nil
