@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"ubuntu-to-fedora/cmd"
+	"ubuntu-to-fedora/cmd" // Removed incorrect import
 
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -20,5 +20,10 @@ func main() {
 // runTUI runs the Bubble Tea TUI for the app
 func runTUI() (tea.Model, error) {
 	p := tea.NewProgram(cmd.InitialModel())
-	return p.Run()
+
+	model, err := p.Run()
+	if err != nil {
+		return nil, fmt.Errorf("error running program: %v", err)
+	}
+	return model, nil
 }

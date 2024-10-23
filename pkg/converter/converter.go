@@ -11,13 +11,11 @@ import (
 	"github.com/go-git/go-git/v5"
 )
 
-// AppScript represents an installation script
 type AppScript struct {
 	Name     string
 	FilePath string
 }
 
-// GetAvailableApps scans the repository directory for installation scripts
 func GetAvailableApps(dir string) ([]AppScript, error) {
 	var apps []AppScript
 
@@ -26,16 +24,12 @@ func GetAvailableApps(dir string) ([]AppScript, error) {
 			return fmt.Errorf("error accessing path %s: %v", path, err)
 		}
 
-		// Skip hidden files (starting with '.')
 		if strings.HasPrefix(info.Name(), ".") {
 			return nil
 		}
 
-		// Only process regular files that are shell scripts
 		if info.Mode().IsRegular() && strings.HasSuffix(info.Name(), ".sh") {
-			// Extract app name from filename (remove .sh extension)
 			name := strings.TrimSuffix(info.Name(), ".sh")
-			// Clean up the name
 			name = strings.ReplaceAll(name, "_", " ")
 			name = strings.ReplaceAll(name, "-", " ")
 			name = strings.Title(strings.ToLower(name))
@@ -56,11 +50,9 @@ func GetAvailableApps(dir string) ([]AppScript, error) {
 	return apps, nil
 }
 
-// CloneOmakubRepo clones the repository to the specified directory with improved error handling.
 func CloneOmakubRepo(destDir string) error {
-	repoURL := "https://github.com/omakub/omakub.git"
+	repoURL := "https://github.com/basecamp/omakub.git"
 
-	// Check if the destination directory exists and is non-empty
 	if _, err := os.Stat(destDir); !os.IsNotExist(err) {
 		files, err := os.ReadDir(destDir)
 		if err != nil {
@@ -71,7 +63,6 @@ func CloneOmakubRepo(destDir string) error {
 		}
 	}
 
-	// Check if Git is installed
 	if _, err := exec.LookPath("git"); err != nil {
 		return errors.New("git is not installed on this system")
 	}
@@ -89,14 +80,12 @@ func CloneOmakubRepo(destDir string) error {
 	return nil
 }
 
-// ReplaceUbuntuWithFedora walks through the directory and replaces Ubuntu-specific commands in shell scripts.
 func ReplaceUbuntuWithFedora(dir string) error {
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return fmt.Errorf("error accessing the path %s: %v", path, err)
 		}
 
-		// Only process regular files that are shell scripts
 		if info.Mode().IsRegular() && strings.HasSuffix(info.Name(), ".sh") {
 			fmt.Printf("Processing file: %s\n", path)
 			return replaceCommandsInFile(path)
@@ -112,7 +101,6 @@ func ReplaceUbuntuWithFedora(dir string) error {
 	return nil
 }
 
-// replaceCommandsInFile reads a file and replaces Ubuntu commands with Fedora equivalents
 func replaceCommandsInFile(filePath string) error {
 	content, err := os.ReadFile(filePath)
 	if err != nil {
@@ -121,7 +109,6 @@ func replaceCommandsInFile(filePath string) error {
 
 	original := string(content)
 
-	// Replace Ubuntu-specific commands with Fedora equivalents
 	replacements := map[string]string{
 		"sudo apt update":     "sudo dnf update",
 		"sudo apt upgrade":    "sudo dnf upgrade",
@@ -135,12 +122,10 @@ func replaceCommandsInFile(filePath string) error {
 	}
 
 	modified := original
-	// Sort replacements by length (longest first) to avoid partial replacements
 	keys := make([]string, 0, len(replacements))
 	for k := range replacements {
 		keys = append(keys, k)
 	}
-	// Sort by length in descending order
 	for i := 0; i < len(keys)-1; i++ {
 		for j := i + 1; j < len(keys); j++ {
 			if len(keys[i]) < len(keys[j]) {
@@ -149,7 +134,6 @@ func replaceCommandsInFile(filePath string) error {
 		}
 	}
 
-	// Apply replacements in order (longest first)
 	for _, ubuntuCmd := range keys {
 		modified = strings.ReplaceAll(modified, ubuntuCmd, replacements[ubuntuCmd])
 	}
