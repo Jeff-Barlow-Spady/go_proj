@@ -11,6 +11,51 @@ import (
 	"github.com/go-git/go-git/v5"
 )
 
+// AppScript represents an installation script
+type AppScript struct {
+	Name     string
+	FilePath string
+}
+
+// GetAvailableApps scans the repository directory for installation scripts
+func GetAvailableApps(dir string) ([]AppScript, error) {
+	var apps []AppScript
+
+	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return fmt.Errorf("error accessing path %s: %v", path, err)
+		}
+
+		// Skip hidden files (starting with '.')
+		if strings.HasPrefix(info.Name(), ".") {
+			return nil
+		}
+
+		// Only process regular files that are shell scripts
+		if info.Mode().IsRegular() && strings.HasSuffix(info.Name(), ".sh") {
+			// Extract app name from filename (remove .sh extension)
+			name := strings.TrimSuffix(info.Name(), ".sh")
+			// Clean up the name
+			name = strings.ReplaceAll(name, "_", " ")
+			name = strings.ReplaceAll(name, "-", " ")
+			name = strings.Title(strings.ToLower(name))
+
+			apps = append(apps, AppScript{
+				Name:     name,
+				FilePath: path,
+			})
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, fmt.Errorf("error scanning directory: %v", err)
+	}
+
+	return apps, nil
+}
+
 // CloneOmakubRepo clones the repository to the specified directory with improved error handling.
 func CloneOmakubRepo(destDir string) error {
 	repoURL := "https://github.com/omakub/omakub.git"

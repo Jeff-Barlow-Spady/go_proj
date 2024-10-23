@@ -9,7 +9,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-// Entry point
+// programCreator allows us to mock program creation in tests
 func main() {
 	if _, err := runTUI(); err != nil {
 		fmt.Printf("Error: %v\n", err)
